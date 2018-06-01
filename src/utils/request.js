@@ -53,6 +53,7 @@ export default function request(url, options) {
   }
   const newOptions =  { ...defaultOptions, options}
   if (newOptions.method === 'POST' || newOptions.method === 'PUT') {
+    debugger
     if(!(newOptions.body instanceof FormData)) {
       newOptions.headers = {
         Accept: 'application/json',

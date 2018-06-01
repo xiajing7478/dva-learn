@@ -1,75 +1,43 @@
-import React, { PureComponent, Fragment } from 'react'
+import React from 'react'
+import styles from  './Login.css'
 import { connect } from 'dva'
-import { Link } from 'dva/router'
-import { Checkbox, Alert, Icon, Button, Input, Form } from 'antd'
-import './Login.css'
-const FormItem = Form.Item
-@connect(({login}) => ({
-  login
-}))
-@Form.create()
-class LoginPage extends PureComponent {
-  // state = {
-  //   type: 'account',
-  //   autoLogin: true
-  // }
-  //
-  // onTabChange(type) {
-  //   this.setState({type})
-  // }
-  //
-  // handleSubmit = (err, values) => {
-  //   debugger
-  //   const { type } = this.state
-  //   if (!err) {
-  //     this.props.dispatch({
-  //       type: 'login/login',
-  //       payload: {
-  //         ...values,
-  //         type
-  //       }
-  //     })
-  //   }
-  // }
-  //
-  // changeAutoLogin(e) {
-  //   this.setState({
-  //     autoLogin: e.target.checked
-  //   })
-  // }
-  //
-  // renderMessage = content => {
-  //   return <Alert style={{marginBottom: 24}}
-  //                 message={content}
-  //                 type="error" showIcon
-  //   />
-  // }
+import { Form, Icon, Input, Button, Checkbox } from 'antd';
+const FormItem = Form.Item;
 
+@connect(({login, state}) => ({
+  login,
+  state
+}))
+class LoginPage extends React.Component {
+  // constructor(props) {
+  //   super(props)
+  // }
   handleSubmit = (e) => {
     e.preventDefault();
     this.props.form.validateFields((err, values) => {
       if (!err) {
         console.log('Received values of form: ', values);
+        this.props.dispatch({
+          type: 'login/login',
+          payload: { phone: values.phone, password: values.password }
+        })
       }
-      console.log(this.props.dispatch)
-      debugger
-      this.props.dispatch({
-        type: 'login/login',
-        payload: { ...values }
-      })
-    });
+    })
   }
 
   render() {
-    const { getFieldDecorator } = this.props.form
+    console.log(this.props.login.status)
+    const { getFieldDecorator } = this.props.form;
+    const { login }  = this.props
     return (
-      // layout={}
-      <Form onSubmit={this.handleSubmit} className="login-form">
+      <div>
+        <h1>{login.status === false ? '用户名或密码错误' : null }</h1>
+        <Form onSubmit={this.handleSubmit} className={styles["login-form"]}>
           <FormItem>
-            {getFieldDecorator('userName', {
-              rules: [{ required: true, message: 'Please input your username!' }],
+            {getFieldDecorator('phone', {
+              rules: [{ required: true, message: 'Please input your phone!' }],
             })(
-              <Input prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />} placeholder="Username" />
+              <Input prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />} placeholder="phone" />
             )}
           </FormItem>
           <FormItem>
@@ -86,15 +54,17 @@ class LoginPage extends PureComponent {
             })(
               <Checkbox>Remember me</Checkbox>
             )}
-            <a className="login-form-forgot" href="">Forgot password</a>
-            <Button type="primary" htmlType="submit" className="login-form-button">
+            <a className={styles["login-form-button"]} href="">Forgot password</a>
+            <Button type="primary" htmlType="submit" className={styles["login-form-button"]}>
               Log in
             </Button>
             Or <a href="">register now!</a>
           </FormItem>
-      </Form>
-    )
+        </Form>
+      </div>
+    );
   }
 }
 
-export default LoginPage
+const LoginForm = Form.create()(LoginPage)
+export default LoginForm
